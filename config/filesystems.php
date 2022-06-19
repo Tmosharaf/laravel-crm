@@ -56,6 +56,22 @@ return [
             'throw' => false,
         ],
 
+        //@this is a custom file system for project files uploading in Storage Folder
+        'project' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/project'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+        ], 
+        'task' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/task'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
     ],
 
     /*
