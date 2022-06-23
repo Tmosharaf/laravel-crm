@@ -5,6 +5,31 @@
             <a href="{{ route('projects.index') }}">Back</a>
 
         </x-bladewind.button>
+
+        @if ($project->is_active)
+        <form action="{{ route('project.completed', $project) }}" method="post">
+            @csrf
+
+            <x-bladewind.button color="red" class="mb-4" can_submit="true"> Project Completed</x-bladewind.button>
+
+        </form>
+        @endif
+
+        <div class="w-full max-w-md m-auto">
+            @if (session('success'))
+                <x-bladewind.alert>
+                    {{ session('success') }}
+                </x-bladewind.alert>
+            @endif
+            @if (session('error'))
+                <x-bladewind.alert type="error">
+                    {{ session('error') }}
+                </x-bladewind.alert>
+            @endif
+
+        </div>
+
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
 
             <table class="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
@@ -76,7 +101,13 @@
                                         <h2 class="text-lg inline">{{ $task->name }}</h2> |
                                         {{ $task->user->name }} |
                                         {{ $task->is_active ? 'Active' : 'Inactive' }}
-                                        <a href="{{ route('task.softdelete', $task) }}" class="inline bg-red-400 px-4 py-2 text-white rounded-md"><i class="fas fa-trash"></i></a>
+                                        {{-- <a href="{{ route('task.softdelete', $task) }}" class="inline bg-red-400 px-4 py-2 text-white rounded-md"><i class="fas fa-trash"></i></a> --}}
+                                        <form action="{{ route('task.softdelete', $task) }}" method="post">
+                                            @csrf
+                                            <button type="submit"
+                                                class="inline bg-red-400 px-4 py-2 text-white rounded-md"><i
+                                                    class="fas fa-trash"></i></button>
+                                        </form>
                                     </div>
                                 @endforeach
 
@@ -88,11 +119,11 @@
             </table>
             <div class="p-4 bg-white mt-8">
                 <h1 class="font-semibold text-2xl mb-4">Project Files</h1>
-                <div class="flex flex-wrap justify-between justify-items-start justify-self-start" >
+                <div class="flex flex-wrap justify-between justify-items-start justify-self-start">
                     @foreach ($project->getMedia('project_files') as $media)
                         <div class="w-5/12 mb-4">
-                            <img src="{{ asset('storage/project/') .'/'.  $media->id .'/'. $media->file_name }}" alt="{{ $media->name }}" 
-                            class="w-full h-auto">
+                            <img src="{{ asset('storage/project/') . '/' . $media->id . '/' . $media->file_name }}"
+                                alt="{{ $media->name }}" class="w-full h-auto">
                         </div>
                     @endforeach
                 </div>

@@ -1,12 +1,29 @@
 @props([
-    'type' => 'primary', // primary, secondary
-    'size' => 'regular', // tiny, small, regular, big
-    'name' => '', // for use with css and js if you want to manipulate the button
-    'has_spinner' => 'false', // will show a spinner
-    'show_spinner' => 'false', // will show a spinner
-    'can_submit' => 'false', // will make this <button type="submit">
-    'disabled' => 'false', // set to true to disable the button
-    'color' => 'blue', // red, yellow, green, blue, purple, orange, cyan, black
+    // primary, secondary
+    'type' => 'primary',
+    // tiny, small, regular, big
+    'size' => 'regular',
+    // for use with css and js if you want to manipulate the button
+    'name' => '', 
+    // will show a spinner
+    'has_spinner' => 'false', 
+    // for backward compatibility with Laravel 8
+    'hasSpinner' => 'false',
+    // will show a spinner
+    'show_spinner' => 'false',
+    // for backward compatibility with Laravel 8 
+    'showSpinner' => 'false',
+    // will make this <button type="submit"> 
+    'can_submit' => 'false', 
+    // for backward compatibility with Laravel 8 
+    'canSubmit' => 'false',
+    // set to true to disable the button 
+    'disabled' => 'false', 
+    // what tag to use for drawing the button <a> or <button>
+    // available options are a, button
+    'tag' => 'button',
+    // red, yellow, green, blue, purple, orange, cyan, black
+    'color' => 'blue', 
     'coloring' => [
         'bg' => [
             'red' => 'bg-red-500',
@@ -44,14 +61,22 @@
     ]
 ])
 @php 
+    // reset variables for Laravel 8 support
+    $show_spinner = $showSpinner;
+    $has_spinner = $hasSpinner;
+    $can_submit = $canSubmit;
+    //------------------------------------------------------
+    
     $button_type = ($can_submit == 'false') ? 'button' : 'submit'; 
     $spinner_css = ($show_spinner == 'true') ? '' : 'hidden'; 
     $primary_color = ($type=='primary') ? $coloring['bg'][$color]. ' '. $coloring['focus'][$color]. ' '. $coloring['hover_active'][$color] : '';
+    $button_text_color = ($type=='primary') ? 'text-white hover:text-white' : 'text-black hover:text-black';
     $is_disabled = ($disabled == 'true') ? 'disabled' : '';
+    $tag = ($tag != 'a' && $tag != 'button') ? 'button' : $tag;
 @endphp
-<button 
-    {{ $attributes->merge(['class' => "bw-button $size $type $name $primary_color $is_disabled"]) }}
+<{{$tag}} 
+    {{ $attributes->merge(['class' => "bw-button cursor-pointer $size $type $name $primary_color $is_disabled"]) }}
     @if ($disabled == 'true') disabled="true" @endif
     type="{{$button_type}}">
-    <span>{{ $slot }}</span> @if ($has_spinner == 'true') <x-bladewind::spinner css="{{$spinner_css}}"></x-bladewind::spinner> @endif
-</button>
+    <span class="{{$button_text_color}}">{{ $slot }}</span> @if ($has_spinner == 'true') <x-bladewind::spinner css="{{$spinner_css}}"></x-bladewind::spinner> @endif
+</{{$tag}}>

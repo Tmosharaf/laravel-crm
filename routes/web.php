@@ -40,11 +40,16 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
 
     Route::get('project/{project}/media/{media}/delete', [ProjectController::class, 'deleteMedia'])
         ->name('project.media.delete');
-
-    Route::get('project/task/{task}/softdelete', [TaskController::class, 'softDelete'])
+    Route::post('project/{project}/completed', [ProjectController::class, 'projectCompleted'])->name('project.completed');
+    
+    
+    
+    Route::post('task/{task}/completed', [TaskController::class, 'taskCompleted'])->name('task.completed');
+    Route::post('project/task/{task}/softdelete', [TaskController::class, 'softDelete'])
         ->name('task.softdelete');
-    Route::get('project/task/{task}/restore', [TaskController::class, 'restore'])
-        ->name('task.restore');
+
+    Route::post('task/{task}/restore', [TaskController::class, 'restore'])->name('task.restore');
+
     Route::resources([
         'users'     => UserController::class,
         'clients'   =>  ClientController::class,
@@ -52,8 +57,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
         'tasks'  =>     TaskController::class
     ]);
 
-    //TODO: Implements Softdeletes
-    // API Routes and Controllers
+    //TODO: API Routes and Controllers
 // API Eloquent Resources
 // API Auth with Sanctum
 // Override API Error Handling and Status Codes

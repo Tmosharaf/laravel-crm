@@ -1,8 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-
-
     <main class="w-full flex-grow p-6">
         <h1 class="text-3xl text-black pb-6">Projects</h1>
         <x-bladewind.button color="purple">
@@ -10,16 +8,15 @@
         </x-bladewind.button>
         <div class="w-full max-w-md m-auto">
             @if (session('success'))
-            <x-bladewind.alert>
-                {{ session('success') }}
-            </x-bladewind.alert>
-        @endif
-        @if (session('error'))
-        <x-bladewind.alert
-            type="error">
-            {{ session('error') }}
-        </x-bladewind.alert>
-        @endif
+                <x-bladewind.alert>
+                    {{ session('success') }}
+                </x-bladewind.alert>
+            @endif
+            @if (session('error'))
+                <x-bladewind.alert type="error">
+                    {{ session('error') }}
+                </x-bladewind.alert>
+            @endif
 
         </div>
         <div class="w-full mt-6">
@@ -42,12 +39,13 @@
                             <tr>
                                 <td class="align-top text-left py-3 px-4">{{ $project->id }}</td>
                                 <td class="align-top text-left py-3 px-4">{{ $project->name }}</td>
-                                <td class="align-top text-left py-3 px-4">{{ $project->client->name }}</td>
-                                <td class="align-top text-left py-3 px-4">{{ $project->status ? 'Active' : 'Inactive' }}</td>
+                                <td class="align-top text-left py-3 px-4">{{ $project->client->name ?? '' }}</td>
+                                <td class="align-top text-left py-3 px-4">{{ $project->status ? 'Active' : 'Inactive' }}
+                                </td>
                                 <td class="align-top text-left py-3 px-4">{{ $project->start_date }}</td>
                                 <td class="align-top text-left py-3 px-4">{!! $project->endsIn !!}</td>
                                 <td class="align-top text-left py-3 px-4">
-                                    {{ $project->user->name }}
+                                    {{ $project->user->name ?? '' }}
                                 </td>
 
                                 <td class="align-top text-left py-3 px-2 flex flex-row justify-around">
@@ -57,9 +55,9 @@
                                     </a>
 
                                     @role('admin')
-                                    <a href="{{ route('projects.edit', $project) }}" class="text-blue-500">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+                                        <a href="{{ route('projects.edit', $project) }}" class="text-blue-500">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
                                         <form action="{{ route('projects.destroy', $project) }}" method="post"
                                             class="inline">
                                             @csrf

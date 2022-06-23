@@ -8,26 +8,45 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Redis\Limiters\DurationLimiterBuilder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\DocBlock\Tag;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+    public function __construct() {
+        $this->middleware('role:admin|user')->only('index', 'show');
+        $this->middleware('role:admin')->only('create', 'store', 'edit', 'update', 'destroy', 'softDelete');
+
+    }
+
+
     public function index(Request $request)
     {
-        // $tasks = Task::with('user', 'project')->paginate(4);        
 
-        if(isset($request->filter)){
-            dump(1);
+
+        if (auth()->user()->hasRole('admin')) {
+
+
+            if ($request->filter === 'softdeleted') {
+                $tasks = Task::with('user', 'project')
+                    ->onlyTrashed()
+                    ->paginate();
+            }elseif ($request->filter === 'all') {
+                $tasks = Task::with('user', 'project')
+                    ->withTrashed()
+                    ->paginate(4);
+            }elseif($request->filter == null) {
+                $tasks = Task::with('user', 'project')
+                    ->paginate(4);
+            }
+
+        } else {
+            $tasks = Auth::user()->tasks()
+            ->with('user', 'project')
+            ->paginate(4);
         }
-
-        $tasks = Task::with('user', 'project')->paginate();
-
 
         return view('admin.task.index', compact('tasks'));
     }
@@ -114,18 +133,15 @@ class TaskController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
+
     public function softDelete(Task $task)
     {
         $task->delete();
 
         return back()->with('success', 'Task Soft Deleted Successfully');
     }
+
+
 
     public function destroy(Task $task)
     {
@@ -134,10 +150,22 @@ class TaskController extends Controller
         return back()->with('success', 'Task Deleted Successfully');
     }
 
-    public function restore(Task $task)
+    public function restore($id)
     {
-        $task->restore();
+        $task = Task::withTrashed()->findOrFail($id)->restore();
+
 
         return back()->with('success', 'Task Restored Successfully');
+    }
+
+    public function taskCompleted(Task $task)
+    {
+        if ($task->is_active) {
+            $task->is_active = 0;
+            $task->save();
+            return back()->with('success', 'Task Completed Successfully');
+        } else {
+            return back()->with('success', 'Task Completed Already');
+        }
     }
 }

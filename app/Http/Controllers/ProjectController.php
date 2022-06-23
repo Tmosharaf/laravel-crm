@@ -22,6 +22,13 @@ class ProjectController extends Controller
     public function index()
     {
         $projects = Project::with(['user', 'client'])->paginate(4);
+
+        if(auth()->user()->hasRole('user')){
+            $projects = Project::with(['user', 'client'])
+                        ->where('user_id', auth()->id())
+                        ->paginate(1);
+        }
+
         return view('admin.project.index', compact('projects'));
     }
 
@@ -143,4 +150,20 @@ class ProjectController extends Controller
         $project->deleteMedia($media_id);
         return back()->with('success', 'Project File Deleted Successfully');        
     }
+
+    public function projectCompleted(Project $project)
+    {
+        if($project->is_active){
+            $project->is_active = 0;
+            $project->save();
+            return back()->with('success', 'Project Completed Successfully');  
+        }else{
+            return back()->with('success', 'Project Completed Already');
+        }
+          
+
+    }
+
+
+
 }

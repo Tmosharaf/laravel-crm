@@ -5,6 +5,29 @@
             <a href="{{ route('tasks.index') }}">Back</a>
 
         </x-bladewind.button>
+        @if ($task->is_active)
+        <form action="{{ route('task.completed', $task) }}" method="post">
+            @csrf
+
+            <x-bladewind.button color="red" class="mb-4" can_submit="true"> Task Completed</x-bladewind.button>
+
+        </form>
+        @endif
+
+        <div class="w-full max-w-md m-auto">
+            @if (session('success'))
+                <x-bladewind.alert>
+                    {{ session('success') }}
+                </x-bladewind.alert>
+            @endif
+            @if (session('error'))
+                <x-bladewind.alert type="error">
+                    {{ session('error') }}
+                </x-bladewind.alert>
+            @endif
+
+        </div>
+
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
 
             <table class="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
